@@ -41,7 +41,7 @@ interface PriceDataI {
     beta_value: number;
     first_data_at: string;
     last_updated: string;
-    quotes: {
+    quotes:{USD:{
         price: number;
         volume_24h: number;
         volume_24h_change_24h: number;
@@ -59,7 +59,7 @@ interface PriceDataI {
         ath_price: number;
         ath_date: string;
         percent_from_price_ath: number;
-    }
+    }};
 }
 interface ICoinData {
     info : InfoDataI;
@@ -69,7 +69,9 @@ interface ICoinData {
 const Container = styled.div`
     padding: 0px 20px;
     color : ${props => props.theme.textColor};
-    width:100vw;
+    width:100%;
+    max-width: 480px;
+    margin:0 auto;
 `;
 const Header = styled.div`
     height: 10vh;
@@ -143,7 +145,9 @@ const Coin = () => {
    // const [loading, setLoading] = useState(true);
     const { coinID } = useParams();
     const { state,pathname } = useLocation();
-    const {isLoading:loading,data} = useQuery<ICoinData>(coinID as string,()=>fetchCoinInfo(coinID as string));
+    const {isLoading:loading,data} = useQuery<ICoinData>(coinID as string,()=>fetchCoinInfo(coinID as string),{
+        refetchInterval:5000
+    });
     /*const [info, setInfo] = useState<InfoDataI>();
     const [priceInfo, setPriceInfo] = useState<PriceDataI>();
     useEffect(() => {
@@ -161,6 +165,7 @@ const Coin = () => {
             data?.info.error ? <Loader>Coin Not Found</Loader> :
             <Container>
                 <Header>
+                    <img src={`https://cryptoicon-api.vercel.app/api/icon/${data?.info.symbol.toLowerCase()}`} style={{width:"50px",height:"50px",marginRight:"15px"}} alt={data?.info.name}/>
                     <Title>{state?.name ? state.name : (loading ? "Loading..." : data?.info.name)}</Title>
                 </Header>
                 <Overview>
@@ -173,8 +178,8 @@ const Coin = () => {
                         <span>{data?.info.symbol}</span>
                     </OverviewItem>
                     <OverviewItem>
-                        <span>Type:</span>
-                        <span>{data?.info.type}</span>
+                        <span>Price:</span>
+                        <span>{data?.price.quotes.USD.price}</span>
                     </OverviewItem>
                 </Overview>
                 <div style={{ margin: "20px 0" }}>
@@ -208,7 +213,7 @@ const Coin = () => {
                 <Routes>
                     <Route path="/" element={<></>}/>
                     <Route path="/price" element={<Price/>}/>
-                    <Route path="/chart" element={<Chart/>}/>
+                    <Route path="/chart" element={<Chart coinID={coinID!}/>}/>
                     <Route path="*" element={<Navigate to="."/>}/>
                 </Routes>
             </Container>

@@ -11,6 +11,8 @@ const Title = styled.h1`
 const Container = styled.div`
     padding: 0px 20px;
     width:100%;
+    max-width: 480px;
+    margin:0 auto;
 `;
 
 const Header = styled.div`
@@ -31,7 +33,7 @@ const Loader = styled.span`
     width:100%;
 `;
 const Coin = styled.li`
-    background-color: white;
+    background-color: ${({theme})=> theme.bgColor==='#2f3640' ? "rgba(0,0,0,0.5)" : "white"};
     margin-bottom: 10px;
     padding:20px;
     font-size: 18px;
