@@ -1,7 +1,9 @@
-import { useEffect, useState } from "react";
+
+import { useQuery } from "react-query";
 import { Route, Routes, useLocation, useParams,Navigate } from "react-router";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
+import { fetchCoinInfo } from "../apis";
 import Chart from "./Chart";
 import Price from "./Price";
 
@@ -58,6 +60,10 @@ interface PriceDataI {
         ath_date: string;
         percent_from_price_ath: number;
     }
+}
+interface ICoinData {
+    info : InfoDataI;
+    price : PriceDataI;
 }
 
 const Container = styled.div`
@@ -134,10 +140,11 @@ const Tab = styled.span<{isActive ?: boolean}>`
 
 
 const Coin = () => {
-    const [loading, setLoading] = useState(true);
+   // const [loading, setLoading] = useState(true);
     const { coinID } = useParams();
     const { state,pathname } = useLocation();
-    const [info, setInfo] = useState<InfoDataI>();
+    const {isLoading:loading,data} = useQuery<ICoinData>(coinID as string,()=>fetchCoinInfo(coinID as string));
+    /*const [info, setInfo] = useState<InfoDataI>();
     const [priceInfo, setPriceInfo] = useState<PriceDataI>();
     useEffect(() => {
         const requestData = async () => {
@@ -148,42 +155,42 @@ const Coin = () => {
             setLoading(false);
         }
         requestData();
-    }, [coinID])
+    }, [coinID])*/
     return (<>
         {loading ? <Loader>Loading...</Loader> :
-            info?.error ? <Loader>Coin Not Found</Loader> :
+            data?.info.error ? <Loader>Coin Not Found</Loader> :
             <Container>
                 <Header>
-                    <Title>{state?.name ? state.name : (loading ? "Loading..." : info?.name)}</Title>
+                    <Title>{state?.name ? state.name : (loading ? "Loading..." : data?.info.name)}</Title>
                 </Header>
                 <Overview>
                     <OverviewItem>
                         <span>Rank:</span>
-                        <span>{info?.rank}</span>
+                        <span>{data?.info.rank}</span>
                     </OverviewItem>
                     <OverviewItem>
                         <span>Symbol:</span>
-                        <span>{info?.symbol}</span>
+                        <span>{data?.info.symbol}</span>
                     </OverviewItem>
                     <OverviewItem>
                         <span>Type:</span>
-                        <span>{info?.type}</span>
+                        <span>{data?.info.type}</span>
                     </OverviewItem>
                 </Overview>
                 <div style={{ margin: "20px 0" }}>
                     <h2 style={{ fontSize: "20px", padding: "0 5px", marginBottom: "5px", fontWeight: "bold" }}>Description</h2>
                     <Description>
-                        {info?.description}
+                        {data?.info.description}
                     </Description>
                 </div>
                 <Overview>
                     <OverviewItem>
                         <span>TotalSupply:</span>
-                        <span>{priceInfo?.total_supply}</span>
+                        <span>{data?.price.total_supply}</span>
                     </OverviewItem>
                     <OverviewItem>
                         <span>MaxSupply:</span>
-                        <span>{priceInfo?.max_supply}</span>
+                        <span>{data?.price.max_supply}</span>
                     </OverviewItem>
                 </Overview>
                 <Tabs>
