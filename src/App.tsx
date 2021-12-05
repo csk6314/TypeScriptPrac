@@ -3,6 +3,10 @@ import Router from './routes/Router'
 import { createGlobalStyle } from "styled-components";
 import reset from "styled-reset";
 import { ReactQueryDevtools } from 'react-query/devtools'
+import {ThemeProvider} from 'styled-components';
+import {lightTheme,darkTheme} from './theme';
+import {useRecoilValue } from 'recoil';
+import { isDark } from './atom';
 const GlobalStyle = createGlobalStyle`
   ${reset};
   *{
@@ -19,13 +23,13 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 function App() {
-
+  const isDarkTheme = useRecoilValue(isDark);
   return (
-    <>
+    <ThemeProvider theme={isDarkTheme?darkTheme:lightTheme}>
       <GlobalStyle/>
       <Router/>
       <ReactQueryDevtools initialIsOpen={true}/>
-    </>
+    </ThemeProvider>
   );
 }
 

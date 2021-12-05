@@ -1,14 +1,17 @@
 
 import { useQuery } from "react-query";
 import { Link } from "react-router-dom";
+import { useRecoilState } from "recoil";
 import styled from "styled-components";
 import { fetchCoins } from "../apis";
+import { isDark } from "../atom";
 const Title = styled.h1`
     color:${props => props.theme.accentColor};
     font-weight: bold;
     font-size: 48px;
 `;
 const Container = styled.div`
+    position: relative;
     padding: 0px 20px;
     width:100%;
     max-width: 480px;
@@ -46,10 +49,20 @@ const Coin = styled.li`
         color : ${props => props.theme.bgColor}
     }
 `;
+const SetThemeButton = styled.button`
+    all:unset;
+    cursor: pointer;
+    position: absolute;
+    color:${({theme})=>theme.textColor};
+    font-size: 20px;
+    right:20px;
+    top:40px;
+`;
 
 interface CoinI {
     id: string,
     name: string,
+    
     symbol: string,
     rank: number,
     is_new: boolean,
@@ -57,6 +70,8 @@ interface CoinI {
     type: string
 }
 const Coins = () => {
+    const [isDarkTheme,setIsDark] = useRecoilState(isDark);
+    const toggleTheme = () => setIsDark(prev=>!prev);
     const {isLoading:loading, data:coins} = useQuery<CoinI[]>("allCoins",fetchCoins);
     /*const [coins, setCoins] = useState<CoinI[]>([]);
     const [loading,setLoading] = useState(true);
@@ -73,6 +88,7 @@ const Coins = () => {
     }, []);*/
     return (
         <Container>
+            <SetThemeButton onClick={()=>toggleTheme()}>{isDarkTheme ? "Light Mode" : "Dark Mode"}</SetThemeButton>
             <Header>
                 <Title>Coins</Title>
             </Header>
